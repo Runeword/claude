@@ -33,11 +33,16 @@
           pkgs = nixpkgs.legacyPackages.${system};
         in
         {
-          default = lefthook.lib.mkShell pkgs [
-            lefthook.devShells.${system}.auto-msg
-            lefthook.devShells.${system}.format-nix
-            lefthook.devShells.${system}.format-yaml
-          ];
+          default =
+            with lefthook.lib;
+            mkShell {
+              inherit pkgs;
+              modules = [
+                auto-msg
+                format-nix
+                format-yaml
+              ];
+            };
           ast-grep = import ./modules/ast-grep.nix { inherit pkgs ast-grep-skill; };
         }
       );
