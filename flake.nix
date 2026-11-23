@@ -61,7 +61,7 @@
           git ? pkgs.git,
           lefthookHooks ? import ./devshells/lefthook-hooks.nix,
         }:
-        import ./wrapper.nix {
+        import ./package.nix {
           inherit pkgs git lefthookHooks;
           files = import ./lib/files.nix {
             inherit pkgs;
@@ -124,8 +124,10 @@
         system: _: {
           default = {
             type = "app";
-            program = "${self.packages.${system}.default}/bin/claude";
-            meta.description = "Claude Code with its bundled config (set $CLAUDE_SOURCES_ROOT to a sources tree for live config)";
+            # claude-launch: the profile prepared, the plugins loaded and claude
+            # sandboxed, as the terminal starts it (launcher/claude-launch.bash).
+            program = "${self.packages.${system}.default}/bin/claude-launch";
+            meta.description = "Claude Code with its bundled config, launched as the terminal launches it (set $CLAUDE_SOURCES_ROOT to a sources tree for live config)";
           };
         }
       );
@@ -133,6 +135,7 @@
       checks = forAllSystems (
         system: _: {
           claude = self.packages.${system}.default.passthru.tests.smoke;
+          claude-launcher = self.packages.${system}.default.passthru.tests.launcher;
           # The committed lefthook-generated.yml is what the dev shell renders.
           lefthook-config = (mkLefthookShell system).mkConfigCheck self;
         }
