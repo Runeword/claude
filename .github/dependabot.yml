@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: "nix"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # A revision is proposed once it is a week old: long enough for a
+    # compromised or broken upstream commit to be noticed and reverted before
+    # dependabot-auto-merge.yml lands it.
+    cooldown:
+      default-days: 7
+    ignore:
+      # Private repos; Dependabot's repo-scoped token can't reach them →
+      # git_dependencies_not_reachable. Bump these inputs manually (`nix flake
+      # update <input>`, with a key in the ssh agent).
+      - dependency-name: "permeance"
+      - dependency-name: "claude-sandbox"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
