@@ -1,0 +1,16 @@
+name: dependabot-auto-merge
+# Turns on auto-merge for Dependabot's pull requests, but for a major version
+# or an update that edits flake.nix, with the steps shared in
+# Runeword/workflows (its README), pinned here to a release. Dependabot
+# proposes the next release once it is a week old (dependabot.yml's
+# cooldown), and that pull request's own copy of this file runs it once, to
+# merge itself; a major release waits for a person.
+on: pull_request
+jobs:
+  auto-merge:
+    # A run Dependabot starts gets a read-only token unless the job asks for
+    # more; the shared workflow can only lower these.
+    permissions:
+      contents: write
+      pull-requests: write
+    uses: Runeword/workflows/.github/workflows/dependabot-merge.yml@a094bb458572b9b4c0832bb4bf7cdc62a3bfcf7d # v1.0.0
