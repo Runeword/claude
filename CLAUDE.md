@@ -1,0 +1,30 @@
+# CLAUDE.md
+
+## What this is
+
+A Nix flake that wraps Claude Code with its configuration: `claude` with this repository's `sources/.claude` (settings, rules, commands, plugins, the git allowlist and the format hook) and, on its PATH, the tools those call (the `claude-<x>` helpers under `packages/`, the Playwright MCP, language servers, formatters, `git-shim` and `git-allowlist-hook`). It runs standalone (`nix run github:Runeword/claude`) or as an input: [Runeword/terminal](https://github.com/Runeword/terminal) builds it with `lib.mkClaude` and ships it, with the shell functions that launch it (`sources/.config/shell/functions/claude.bash` there) and the claude-sandbox launchers it runs under.
+
+## Common commands
+
+Enter the dev shell first (`nix develop`; direnv does it through `.envrc`): it renders `lefthook-generated.yml` and installs the git hooks. `nix flake check` builds every check; `nix build .#checks.x86_64-linux.claude` runs the wrapper's smoke test alone.
+
+## Layout and outputs
+
+- `wrapper.nix` is the wrapper: a `symlinkJoin` of `claude-code` and the config, with permeance's compiled launcher, which sets claude's PATH, `CLAUDE_GIT_ALLOWLIST_CONFIG`, `--settings` and the other flags. `flake.nix` builds it through `lib.mkClaude { system, configPath ? ./sources, git ? null, lefthookHooks ? null }`, for `packages.default` and for consumers. It takes the system, not a package set, and builds from this flake's nixpkgs (which a consumer can have follow its own). `git` is the git the shim runs once the allowlist lets a command through (nixpkgs' by default; the terminal passes its wrapped one). `lefthookHooks` is a `lefthook-hooks.nix` whose format hooks' tools go on claude's PATH for `claude-format` (this repository's `devshells/lefthook-hooks.nix` by default; the terminal passes its own).
+- `packages/<x>/` holds the Go binary `claude-<x>`: the directory drops the prefix, while the `go.mod` module, which names the binary, and `pname` keep it. All are stdlib-only (`vendorHash = null`). `packages.claude-sessions` is also an output of its own, for the shell functions that run it outside claude; `packages.playwright-mcp` is nixpkgs' Playwright MCP behind a wrapper that gives it a scratch home.
+- `sources/.claude` is the config, bundled into the wrapper's `$out` by `lib/files.nix`'s `mkConfig`. The terminal's `claude.bash` provisions each claude profile from it (its `rules/` and `commands/` linked, `settings.json` merged with this OS's `settings.<os>.json` overlay) and loads the plugins from it.
+- The wrapper replaces Claude Code's built-in Explore agent with a read-only one, passed to every session with `--agents`: `packages/explore-guard/agent.nix` and `prompt.md` define it, next to `claude-explore-guard`, the guard its `PreToolUse` hook on Bash runs by store path with `onFailure: "block"`. The agent ships with its guard, rather than loading live from `sources/` like the rest of the config, so a running claude never loads an agent its own build doesn't enforce; changing its prompt therefore takes a rebuild. Claude Code refuses to start on an `--agents` value it can't load.
+
+## Live config and the sandbox
+
+The launcher uses a permeance namespace of its own, `CLAUDE_SOURCES`: `CLAUDE_SOURCES_ROOT=/path/to/sources` makes claude read its config from that live tree, with no rebuild (`CLAUDE_SOURCES_TREE` is what the launcher resolved; `CLAUDE_SOURCES_ROOT_IGNORE` sets the live tree aside). The `PERMEANCE_ROOT` of the tree a shell around claude runs from, such as the terminal's, reaches claude's children untouched rather than redirecting claude to a tree with no claude config. Unset, claude reads the copy bundled in the store, which no session can edit. The terminal's `claude.bash` reads the same variable (`__claude_tree`), so the profiles and plugins it provisions come from the tree claude runs with.
+
+Under the terminal's claude-sandbox, a live tree is read-only to a session started anywhere but in it. Nothing pins it in a session started in this checkout, which can write everything in it: with `CLAUDE_SOURCES_ROOT` pointing here, such a session could widen its own `git-allowlist.toml`, which the git shim re-reads on every call, and change the `settings.json`, plugins and rules later sessions load. So leave `CLAUDE_SOURCES_ROOT` unset where sessions start in this repository (its bundled copy is what claude runs then), or edit `sources/` from a plain terminal.
+
+`permeance` and `claude-sandbox` are private and fetched over ssh, with the ref spelled out, as in the terminal; a consumer has them follow its own inputs.
+
+## Testing
+
+`wrapper.nix`'s `passthru.tests.smoke` (the `claude` check) tests the wrapper behaviourally, through `permeance.tests.mkSmoke`: claude starts and reads its config from `CLAUDE_SOURCES_ROOT` and not `PERMEANCE_ROOT`, every command `settings.json` and the plugins name resolves on claude's PATH, `claude-statusline` renders a fixed payload (a change to its output updates that expected line), `claude-format` runs a repository's own lefthook formatters and only those, the Explore agent loads with its guard, and the Playwright MCP starts with no way out of its wrapper's settings. A change to the config or to what the wrapper puts on claude's PATH extends that test. A Go binary ships its `main_test.go` beside `main.go`, table-driven with stdlib `testing`: `buildGoModule` runs `go test` in its check phase, so it runs on every build of the wrapper. `lefthook-config` checks that the committed `lefthook-generated.yml` is what the dev shell renders.
+
+The terminal's checks cover what this repository can't see: its `claude` check runs this smoke test on the terminal's build, its `claude-sandbox` check dry-runs the sandbox launchers against its tree, and its `zsh-claude` topic asserts that `claude.bash` and this config agree (the variable above, the default plugins `claude.bash` names, `.shellcheckrc` and `shell-lsp`'s exclusions). A change here that touches one of those (a plugin renamed, the namespace) needs the matching change there.
