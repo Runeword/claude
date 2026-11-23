@@ -18,18 +18,15 @@
     },
     "claude-sandbox": {
       "inputs": {
-        "lefthook": [
-          "lefthook"
-        ],
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1794693896,
-        "narHash": "sha256-QCt1cLfnxR8TZ/ZrBvs6j+wDOo7ZnBmBkODyDVPT+z4=",
+        "lastModified": 1795460758,
+        "narHash": "sha256-rCi6+9LF+ndi7ujIQw+oG1Comnor/wfx8ljbW2ZmdPI=",
         "ref": "main",
-        "rev": "8b3726b527d58bdbb194e8064d78192a0067f4eb",
+        "rev": "ac850582d95ddfb548e29a6fc5e63f25fa7346c4",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/Runeword/claude-sandbox"
