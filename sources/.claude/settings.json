@@ -68,12 +68,18 @@
   "disableRemoteControl": true,
   "feedbackDrafts": "off",
   "skipDangerousModePermissionPrompt": true,
+  "model": "claude-opus-5-5",
   "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch"
+    ],
     "ask": [
       "Edit(~/.claude*/projects/*/memory/**)"
     ]
   },
   "env": {
+    "CLAUDE_CODE_SYNTAX_HIGHLIGHT": "false",
     "DISABLE_AUTOUPDATER": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
     "CLAUDE_CODE_SHELL_PREFIX": "claude-shell-guard"
