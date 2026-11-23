@@ -13,7 +13,10 @@ mkdir -p "$project"
 cd "$project" || exit 1
 # This system's overlay: linux or darwin.
 os=@os@
-bundled_sandbox=$(@jq@/bin/jq -c .sandbox "@wrapper@/.claude/settings.$os.json")
+# claude-profile writes the settings it merges with their keys sorted, so the
+# JSON compared below is compared with its keys sorted (jq -S): only on macOS
+# does the overlay's sandbox block have more than one key, in an order of its own.
+bundled_sandbox=$(@jq@/bin/jq -S -c .sandbox "@wrapper@/.claude/settings.$os.json")
 read -r -a defaults <<<"@defaults@"
 
 # has DIR LINE...: each LINE is a line of DIR/argv.
@@ -31,7 +34,7 @@ has() {
 OUT=$TMPDIR/plain
 if CLAUDE_SANDBOX=0 OUT=$OUT @direct@/bin/claude-launch --resume abc 2>"$TMPDIR/plain.err" &&
   [ -f "$HOME/.claude-1/.claude-launch" ] &&
-  [ "$(@jq@/bin/jq -c .sandbox "$HOME/.claude-1/settings.json")" = "$bundled_sandbox" ] &&
+  [ "$(@jq@/bin/jq -S -c .sandbox "$HOME/.claude-1/settings.json")" = "$bundled_sandbox" ] &&
   [ -f "$HOME/.claude-1/commands/x.md" ] && [ -f "$HOME/.claude-1/commands/r.md" ]; then
   ok "a launch with no profile named prepares ~/.claude-1, marked, with the $os overlay and the /x and /r commands"
 else
@@ -71,7 +74,7 @@ echo '{"sandbox":{"enabled":"live"}}' >"$live/.claude/settings.$os.json"
 OUT=$TMPDIR/live-out
 if CLAUDE_SANDBOX=0 OUT=$OUT CLAUDE_CONFIG_DIR=$HOME/.claude-2 CLAUDE_SOURCES_ROOT=$live CLAUDE_PLUGINS=only \
   @direct@/bin/claude-launch 2>"$TMPDIR/live.err" &&
-  [ "$(@jq@/bin/jq -c . "$HOME/.claude-2/settings.json")" = '{"live":true,"sandbox":{"enabled":"live"}}' ] &&
+  [ "$(@jq@/bin/jq -S -c . "$HOME/.claude-2/settings.json")" = '{"live":true,"sandbox":{"enabled":"live"}}' ] &&
   [ "$(readlink "$HOME/.claude-2/rules")" = "$live/.claude/rules" ] &&
   has "$OUT" "$live/.claude/plugins/only"; then
   ok "CLAUDE_SOURCES_ROOT prepares the profile from the live tree it names, and loads its plugins"
@@ -80,7 +83,7 @@ else
 fi
 if CLAUDE_SANDBOX=0 OUT=$TMPDIR/ignore CLAUDE_CONFIG_DIR=$HOME/.claude-3 CLAUDE_SOURCES_ROOT=$live CLAUDE_SOURCES_ROOT_IGNORE=1 \
   @direct@/bin/claude-launch 2>/dev/null &&
-  [ "$(@jq@/bin/jq -c .sandbox "$HOME/.claude-3/settings.json")" = "$bundled_sandbox" ]; then
+  [ "$(@jq@/bin/jq -S -c .sandbox "$HOME/.claude-3/settings.json")" = "$bundled_sandbox" ]; then
   ok "CLAUDE_SOURCES_ROOT_IGNORE prepares the profile from the bundled tree"
 else
   fail "CLAUDE_SOURCES_ROOT_IGNORE does not set the live tree aside"
@@ -137,7 +140,7 @@ mkdir -p "$project/.claude"
 echo '{"hooks":{},"permissions":{"allow":["Bash(ls)"],"defaultMode":"bypassPermissions"}}' >"$project/.claude/settings.local.json"
 said=$(CLAUDE_SANDBOX=0 OUT=$TMPDIR/scrubbed @direct@/bin/claude-launch 2>&1 >/dev/null)
 if [ "$(@jq@/bin/jq -c '[.mcpServers, .projects."/p".mcpServers]' "$HOME/.claude-1/.claude.json")" = '[{},{}]' ] &&
-  [ "$(@jq@/bin/jq -c . "$project/.claude/settings.local.json")" = '{"permissions":{"allow":["Bash(ls)"]}}' ] &&
+  [ "$(@jq@/bin/jq -S -c . "$project/.claude/settings.local.json")" = '{"permissions":{"allow":["Bash(ls)"]}}' ] &&
   case $said in *"removed the MCP servers a, b"*) true ;; *) false ;; esac &&
   case $said in *"dropped hooks, permissions.defaultMode"*) true ;; *) false ;; esac then
   ok "a launch drops the MCP servers and local settings a session planted, saying so, and keeps claude's permission rules"
