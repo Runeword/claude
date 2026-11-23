@@ -11,17 +11,18 @@ import (
 	"time"
 )
 
-// Which session a claude has open, as its launch records it. __claude (the
-// terminal's claude.bash) starts claude under `flock -F <file>`, <file>
-// being a file of the launch's own in the profile's open-sessions/, which
-// it names to claude in $CLAUDE_SESSIONS_OPEN, and claude's SessionStart
-// hook runs mark, which writes into it the id of each session claude starts,
-// resumes or clears into. flock locks the file and execs into claude, which
-// holds the lock for as long as it runs, and the kernel drops it once claude
-// and what it started have ended, however they end (the sandbox ends them
-// together): a held lock that names a session says for sure that session
-// is open, where watching for a process that names it can miss it (APUE
-// §13.5's single-instance lock, with the session where it writes the PID).
+// Which session a claude has open, as its launch records it. claude-launch
+// (launcher/claude-launch.bash) starts claude under `flock -F <file>`,
+// <file> being a file of the launch's own in the profile's open-sessions/,
+// which it names to claude in $CLAUDE_SESSIONS_OPEN, and claude's
+// SessionStart hook runs mark, which writes into it the id of each session
+// claude starts, resumes or clears into. flock locks the file and execs into
+// claude, which holds the lock for as long as it runs, and the kernel drops
+// it once claude and what it started have ended, however they end (the
+// sandbox ends them together): a held lock that names a session says for
+// sure that session is open, where watching for a process that names it can
+// miss it (APUE §13.5's single-instance lock, with the session where it
+// writes the PID).
 const (
 	openVar = "CLAUDE_SESSIONS_OPEN"
 	openDir = "open-sessions"
