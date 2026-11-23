@@ -10,6 +10,8 @@ Two of its inputs, `permeance` and `claude-sandbox`, are private repositories fe
 nix run github:Runeword/claude
 ```
 
+That runs `claude-launch`: claude with its profile (`~/.claude-1` unless `CLAUDE_CONFIG_DIR` says otherwise) prepared from the config, its default plugins loaded, and, on Linux, the whole process in a bubblewrap sandbox. Every argument goes to claude. `CLAUDE_PLUGINS` picks other plugins (`claude-plugins` lists them), and `CLAUDE_SANDBOX=0` starts claude unsandboxed. A launch only prepares a profile of its own: to let it manage one you already have, `touch` its `.claude-launch` marker once. The bare wrapper is `bin/claude` in the same package.
+
 ## Use it as an input
 
 ```nix
