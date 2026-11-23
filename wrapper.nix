@@ -639,6 +639,7 @@ let
         fi
       '';
     };
+    meta.mainProgram = "claude";
   };
 in
 self
