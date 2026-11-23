@@ -16,6 +16,31 @@
         "type": "github"
       }
     },
+    "claude-sandbox": {
+      "inputs": {
+        "lefthook": [
+          "lefthook"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794693896,
+        "narHash": "sha256-QCt1cLfnxR8TZ/ZrBvs6j+wDOo7ZnBmBkODyDVPT+z4=",
+        "ref": "main",
+        "rev": "8b3726b527d58bdbb194e8064d78192a0067f4eb",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/Runeword/claude-sandbox"
+      },
+      "original": {
+        "ref": "main",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/Runeword/claude-sandbox"
+      }
+    },
     "lefthook": {
       "inputs": {
         "nixpkgs": [
@@ -23,40 +48,85 @@
         ]
       },
       "locked": {
-        "lastModified": 1774819702,
-        "narHash": "sha256-lL8oz8Tr+TDPbWUdQq1du76L6Ohjdf7t8zWY+cZGvWo=",
+        "lastModified": 1793145932,
+        "narHash": "sha256-H2DH59p98I4r49j2nd//H2WuysS3sWlxLXYrx6tmK8k=",
         "owner": "Runeword",
         "repo": "lefthook",
-        "rev": "b458d33e097310bbef1c77a19a19fd64abe87d8d",
+        "rev": "02783de356197896257a4324fa5e83edbce8ccf7",
         "type": "github"
       },
       "original": {
         "owner": "Runeword",
         "repo": "lefthook",
+        "type": "github"
+      }
+    },
+    "nix-index-database": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793543282,
+        "narHash": "sha256-PHtGxKYM99f8WhGR5YD7iiCiwemKa2wUD4yVI2oALFg=",
+        "owner": "nix-community",
+        "repo": "nix-index-database",
+        "rev": "cee0f879d338cf08f814210fa6c2b280594ade0a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nix-index-database",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1774386573,
-        "narHash": "sha256-4hAV26quOxdC6iyG7kYaZcM3VOskcPUrdCQd/nx8obc=",
+        "lastModified": 1793826729,
+        "narHash": "sha256-D5H7H+qMoTGI/jJtxKP4u7BdjkFnUyhOovTrf3pTOr0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "46db2e09e1d3f113a13c0d7b81e2f221c63b8ce9",
+        "rev": "6dadaf4375be35033e1c84395adbd53ff5fded96",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-unstable",
+        "ref": "nixpkgs-unstable",
         "repo": "nixpkgs",
         "type": "github"
+      }
+    },
+    "permeance": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792878423,
+        "narHash": "sha256-dC9arpM4eUumuhKxsoAArgiTGP0H4nH2QhRYgqUvIto=",
+        "ref": "main",
+        "rev": "1592cfab119f06d151522a960d1ac311f6456be0",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/Runeword/permeance"
+      },
+      "original": {
+        "ref": "main",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/Runeword/permeance"
       }
     },
     "root": {
       "inputs": {
         "ast-grep-skill": "ast-grep-skill",
+        "claude-sandbox": "claude-sandbox",
         "lefthook": "lefthook",
-        "nixpkgs": "nixpkgs"
+        "nix-index-database": "nix-index-database",
+        "nixpkgs": "nixpkgs",
+        "permeance": "permeance"
       }
     }
   },
