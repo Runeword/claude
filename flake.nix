@@ -17,7 +17,6 @@
 
   inputs.claude-sandbox.url = "git+ssh://git@github.com/Runeword/claude-sandbox?ref=main&shallow=1";
   inputs.claude-sandbox.inputs.nixpkgs.follows = "nixpkgs";
-  inputs.claude-sandbox.inputs.lefthook.follows = "lefthook";
 
   inputs.nix-index-database.url = "github:nix-community/nix-index-database";
   inputs.nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
