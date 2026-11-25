@@ -21,8 +21,12 @@ If no question is given, use the open question in this conversation.
    and books. It reports in under 300 words: the main principles, each with a
    named source, then one recommendation for this case.
 5. When all are back, answer with:
+   - the facts the question turns on, such as what each option is and how
+     they differ;
    - the principles they agree on, each with its source;
    - where they disagree, and why;
-   - one clear pick for this case.
+   - one clear pick for this case, as its own last part. If it depends on
+     something the question doesn't say, pick for the likeliest case and say
+     what would change it.
 
 Use plain words. Don't give a new list of options.
