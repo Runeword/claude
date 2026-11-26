@@ -67,6 +67,7 @@
   "disableArtifact": true,
   "disableRemoteControl": true,
   "feedbackDrafts": "off",
+  "autoCompactEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "model": "claude-opus-5-5",
   "permissions": {
