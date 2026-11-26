@@ -237,7 +237,7 @@ let
     };
     passthru.tests.smoke = permeance.tests.mkSmoke {
       name = "claude";
-      description = "Verify claude binary executes and takes its live config from CLAUDE_SOURCES_ROOT, not PERMEANCE_ROOT, settings.json, plugin hook and plugin MCP commands resolve, keep CLAUDE.local.md files out of context and keep the bypass-mode warning accepted, git-allowlist-hook blocks when it can't run, claude starts with the read-only Explore agent and its own build's guard, which blocks writes, memory changes are asked for and held until Claude's work is done, the status line renders, claude-format runs a repository's own lefthook formatters, only those, and the built-in ones elsewhere, comma looks packages up offline, the Playwright MCP starts in its scratch home with its testing and devtools tools, claude denies its unsafe tool and no plugin attaches it to an outside browser or widens its reach, and the Go and Lua language servers keep their caches where the sandbox can write";
+      description = "Verify claude binary executes and takes its live config from CLAUDE_SOURCES_ROOT, not PERMEANCE_ROOT, settings.json, plugin hook and plugin MCP commands resolve, keep CLAUDE.local.md files out of context, keep the bypass-mode warning accepted and turn auto-compact off, git-allowlist-hook blocks when it can't run, claude starts with the read-only Explore agent and its own build's guard, which blocks writes, memory changes are asked for and held until Claude's work is done, the status line renders, claude-format runs a repository's own lefthook formatters, only those, and the built-in ones elsewhere, comma looks packages up offline, the Playwright MCP starts in its scratch home with its testing and devtools tools, claude denies its unsafe tool and no plugin attaches it to an outside browser or widens its reach, and the Go and Lua language servers keep their caches where the sandbox can write";
       script = ''
         # claude-code does not expose a config-loading probe that works in a
         # sandbox without auth/network. This only verifies the wrapper's binary
@@ -425,6 +425,16 @@ let
           ok "settings.json keeps the accepted bypass-mode warning"
         else
           fail "settings.json drops the accepted bypass-mode warning"
+        fi
+
+        # Auto-compact is off: Claude Code doesn't summarize a conversation
+        # whose context fills, and neither compacts one while the session is
+        # idle nor precomputes the summary in the background, which it only does
+        # with auto-compact on. /compact still compacts on request.
+        if ${pkgs.jq}/bin/jq -e '.autoCompactEnabled == false' "$settings" > /dev/null; then
+          ok "settings.json turns auto-compact off"
+        else
+          fail "settings.json leaves auto-compact on"
         fi
 
         # Memory changes: the ask rule asks before each write by Claude's file
